@@ -7,33 +7,33 @@ const permissions = require('../../middlewares/permissions');
 // Todas las rutas requieren autenticación
 router.use(auth);
 
-// Listar agencias - Requiere AGENCIA_LISTAR
+// Listar agencias - Requiere ADMIN_AGENCIAS
 router.get('/', 
-  permissions('AGENCIA_LISTAR'), 
+  permissions(['ADMIN_AGENCIAS', 'ADMIN_USUARIOS']), 
   agenciaController.listar
 );
 
-// Obtener agencia por ID - Requiere AGENCIA_LISTAR
+// Obtener agencia por ID - Requiere ADMIN_AGENCIAS
 router.get('/:id', 
-  permissions('AGENCIA_LISTAR'), 
+  permissions(['ADMIN_AGENCIAS', 'ADMIN_USUARIOS']), 
   agenciaController.obtenerPorId
 );
 
-// Crear agencia - Requiere AGENCIA_CREAR
+// Crear agencia - Requiere ADMIN_AGENCIAS
 router.post('/', 
-  permissions('AGENCIA_CREAR'), 
+  permissions(['ADMIN_AGENCIAS']), 
   agenciaController.crear
 );
 
-// Actualizar agencia - Requiere AGENCIA_EDITAR
+// Actualizar agencia - Requiere ADMIN_AGENCIAS
 router.put('/:id', 
-  permissions('AGENCIA_EDITAR'), 
+  permissions(['ADMIN_AGENCIAS']), 
   agenciaController.actualizar
 );
 
-// Cambiar estado de agencia - Requiere AGENCIA_EDITAR
+// Cambiar estado de agencia - Requiere ADMIN_AGENCIAS
 router.patch('/:id/estado', 
-  permissions('AGENCIA_EDITAR'), 
+  permissions(['ADMIN_AGENCIAS']), 
   agenciaController.cambiarEstado
 );
 

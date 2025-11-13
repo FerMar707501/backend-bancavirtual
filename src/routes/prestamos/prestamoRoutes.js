@@ -9,37 +9,37 @@ router.use(authMiddleware);
 
 // Listar préstamos
 router.get('/', 
-  permissionsMiddleware(['PREST_LISTAR']), 
+  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.listar
 );
 
 // Obtener préstamo por ID
 router.get('/:id', 
-  permissionsMiddleware(['PREST_LISTAR']), 
+  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.obtenerPorId
 );
 
 // Solicitar préstamo
 router.post('/solicitar', 
-  permissionsMiddleware(['PREST_SOLICITAR']), 
+  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.solicitar
 );
 
 // Aprobar préstamo
 router.post('/:id/aprobar', 
-  permissionsMiddleware(['PREST_APROBAR']), 
+  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.aprobar
 );
 
 // Desembolsar préstamo
 router.post('/:id/desembolsar', 
-  permissionsMiddleware(['PREST_DESEMBOLSAR']), 
+  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.desembolsar
 );
 
 // Rechazar préstamo
 router.post('/:id/rechazar', 
-  permissionsMiddleware(['PREST_EVALUAR']), 
+  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.rechazar
 );
 

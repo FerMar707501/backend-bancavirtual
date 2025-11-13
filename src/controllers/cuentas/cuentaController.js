@@ -128,10 +128,10 @@ const cuentaController = {
     const transaction = await db.sequelize.transaction();
 
     try {
-      const { id_cliente, id_tipo_cuenta, saldo_inicial } = req.body;
+      const { id_cliente, id_tipo_cuenta, id_agencia, saldo_inicial } = req.body;
 
       // Validar campos requeridos
-      if (!id_cliente || !id_tipo_cuenta) {
+      if (!id_cliente || !id_tipo_cuenta || !id_agencia) {
         await transaction.rollback();
         return responseHelper.error(res, 'Faltan campos requeridos', 400);
       }
@@ -185,7 +185,7 @@ const cuentaController = {
         numero_cuenta,
         id_cliente,
         id_tipo_cuenta,
-        id_agencia: req.user.id_agencia || 1,
+        id_agencia: id_agencia,
         saldo: saldo_inicial || 0.00,
         fecha_apertura: new Date(),
         estado: 'activa'
@@ -340,6 +340,51 @@ const cuentaController = {
     } catch (error) {
       console.error('Error al consultar saldo:', error);
       return responseHelper.error(res, 'Error al consultar saldo', 500);
+    }
+  },
+
+  // Obtener cuentas del cliente autenticado
+  async misCuentas(req, res) {
+    try {
+      // Obtener el usuario completo para tener acceso al correo
+      const usuario = await db.Usuario.findByPk(req.user.id_usuario);
+      
+      if (!usuario) {
+        return responseHelper.error(res, 'Usuario no encontrado', 404);
+      }
+
+      // Buscar el cliente asociado al usuario por correo
+      const cliente = await db.Cliente.findOne({
+        where: { correo: usuario.correo }
+      });
+
+      if (!cliente) {
+        return responseHelper.error(res, 'No se encontró información del cliente', 404);
+      }
+
+      // Obtener las cuentas del cliente
+      const cuentas = await db.Cuenta.findAll({
+        where: { 
+          id_cliente: cliente.id_cliente,
+          estado: { [Op.in]: ['activa', 'bloqueada'] }
+        },
+        include: [
+          {
+            model: db.TipoCuenta,
+            as: 'tipoCuenta'
+          },
+          {
+            model: db.Agencia,
+            as: 'agencia'
+          }
+        ],
+        order: [['created_at', 'DESC']]
+      });
+
+      return responseHelper.success(res, { cuentas }, 'Cuentas obtenidas exitosamente');
+    } catch (error) {
+      console.error('Error al obtener mis cuentas:', error);
+      return responseHelper.error(res, 'Error al obtener cuentas', 500);
     }
   }
 };

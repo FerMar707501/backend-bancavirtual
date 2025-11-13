@@ -184,7 +184,8 @@ const clienteController = {
         primer_apellido,
         segundo_apellido,
         direccion,
-        correo
+        correo,
+        estado_kyc
       } = req.body;
 
       const cliente = await db.Cliente.findByPk(id);
@@ -194,14 +195,21 @@ const clienteController = {
       }
 
       // Actualizar campos
-      await cliente.update({
+      const updateData = {
         primer_nombre: primer_nombre || cliente.primer_nombre,
         segundo_nombre: segundo_nombre !== undefined ? segundo_nombre : cliente.segundo_nombre,
         primer_apellido: primer_apellido || cliente.primer_apellido,
         segundo_apellido: segundo_apellido !== undefined ? segundo_apellido : cliente.segundo_apellido,
         direccion: direccion || cliente.direccion,
         correo: correo || cliente.correo
-      });
+      };
+
+      // Solo actualizar estado_kyc si se proporciona
+      if (estado_kyc) {
+        updateData.estado_kyc = estado_kyc;
+      }
+
+      await cliente.update(updateData);
 
       // Registrar en bitácora
       await db.Bitacora.create({

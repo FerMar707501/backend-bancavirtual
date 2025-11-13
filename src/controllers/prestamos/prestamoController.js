@@ -108,9 +108,13 @@ const prestamoController = {
       const {
         id_cliente,
         id_tipo_prestamo,
+        id_cuenta_desembolso,
         monto_solicitado,
         plazo_meses,
-        destino_prestamo
+        destino_prestamo,
+        proposito,
+        tasa_interes,
+        frecuencia_pago
       } = req.body;
 
       // Validar campos requeridos
@@ -197,14 +201,16 @@ const prestamoController = {
         numero_prestamo,
         id_cliente,
         id_tipo_prestamo,
+        id_cuenta_desembolso: id_cuenta_desembolso || null,
         id_agencia: req.user.id_agencia || 1,
         monto_solicitado,
         monto_aprobado: null,
-        tasa_interes: tipoPrestamo.tasa_interes_anual,
+        tasa_interes: tasa_interes || tipoPrestamo.tasa_interes_anual,
         plazo_meses,
+        frecuencia_pago: frecuencia_pago || 'mensual',
         cuota_mensual: cuotaMensual.toFixed(2),
         saldo_pendiente: 0,
-        destino: destino_prestamo || 'No especificado',
+        destino: proposito || destino_prestamo || 'No especificado',
         fecha_solicitud: new Date(),
         estado: 'solicitado'
       }, { transaction });
@@ -335,12 +341,6 @@ const prestamoController = {
 
     try {
       const { id } = req.params;
-      const { id_cuenta_destino } = req.body;
-
-      if (!id_cuenta_destino) {
-        await transaction.rollback();
-        return responseHelper.error(res, 'Debe especificar la cuenta de destino', 400);
-      }
 
       const prestamo = await db.Prestamo.findByPk(id, {
         include: [{ model: db.Cliente, as: 'cliente' }],
@@ -355,6 +355,14 @@ const prestamoController = {
       if (prestamo.estado !== 'aprobado') {
         await transaction.rollback();
         return responseHelper.error(res, `El préstamo está ${prestamo.estado}, debe estar aprobado`, 400);
+      }
+
+      // Usar la cuenta de desembolso del préstamo
+      const id_cuenta_destino = prestamo.id_cuenta_desembolso;
+      
+      if (!id_cuenta_destino) {
+        await transaction.rollback();
+        return responseHelper.error(res, 'El préstamo no tiene cuenta de desembolso configurada', 400);
       }
 
       // Validar cuenta

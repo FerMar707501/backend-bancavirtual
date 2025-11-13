@@ -24,6 +24,14 @@ const Prestamo = sequelize.define('prestamos', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  id_cuenta_desembolso: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  frecuencia_pago: {
+    type: DataTypes.ENUM('semanal', 'quincenal', 'mensual'),
+    defaultValue: 'mensual'
+  },
   monto_solicitado: {
     type: DataTypes.DECIMAL(15, 2),
     allowNull: false

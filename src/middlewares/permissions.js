@@ -4,8 +4,13 @@ const responseHelper = require('../utils/responseHelper');
 const permissionsMiddleware = (permisosRequeridos = []) => {
   return async (req, res, next) => {
     try {
+      // Normalizar permisosRequeridos a array si es un string
+      const permisos = Array.isArray(permisosRequeridos) 
+        ? permisosRequeridos 
+        : [permisosRequeridos];
+
       // Si no se requieren permisos específicos, solo verificar autenticación
-      if (permisosRequeridos.length === 0) {
+      if (permisos.length === 0) {
         return next();
       }
 
@@ -37,7 +42,7 @@ const permissionsMiddleware = (permisosRequeridos = []) => {
       const permisosUsuario = usuario.rol.permisos.map(p => p.codigo);
 
       // Verificar si el usuario tiene al menos uno de los permisos requeridos
-      const tienePermiso = permisosRequeridos.some(permiso => 
+      const tienePermiso = permisos.some(permiso => 
         permisosUsuario.includes(permiso)
       );
 
