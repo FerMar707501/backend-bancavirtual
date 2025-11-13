@@ -4,6 +4,62 @@ const { generateLoanNumber } = require('../../utils/generators');
 const { Op } = require('sequelize');
 
 const prestamoController = {
+  // Ver mis préstamos (para clientes)
+  async misPrestamos(req, res) {
+    try {
+      // Validar que el usuario esté autenticado
+      if (!req.user) {
+        return responseHelper.error(res, 'Usuario no válido', 401);
+      }
+
+      // Buscar usuario completo
+      const usuario = await db.Usuario.findByPk(req.user.id_usuario);
+      
+      if (!usuario || !usuario.correo) {
+        return responseHelper.error(res, 'Usuario no válido', 401);
+      }
+
+      // Buscar cliente asociado al usuario por correo
+      const cliente = await db.Cliente.findOne({
+        where: { correo: usuario.correo }
+      });
+
+      if (!cliente) {
+        return responseHelper.success(res, [], 'No se encontró información de cliente');
+      }
+
+      const prestamos = await db.Prestamo.findAll({
+        where: { id_cliente: cliente.id_cliente },
+        include: [
+          {
+            model: db.TipoPrestamo,
+            as: 'tipoPrestamo',
+            attributes: ['id_tipo_prestamo', 'codigo', 'nombre', 'descripcion', 'tasa_interes_anual']
+          },
+          {
+            model: db.Usuario,
+            as: 'usuarioAprobador',
+            attributes: ['id_usuario', 'username', 'nombre_completo'],
+            required: false
+          },
+          {
+            model: db.PagoPrestamo,
+            as: 'pagos',
+            separate: true,
+            order: [['fecha_pago', 'DESC']],
+            limit: 5
+          }
+        ],
+        order: [['created_at', 'DESC']]
+      });
+
+      return responseHelper.success(res, prestamos, 'Préstamos obtenidos exitosamente');
+    } catch (error) {
+      console.error('Error al obtener mis préstamos:', error);
+      return responseHelper.error(res, 'Error al obtener préstamos', 500);
+    }
+  },
+
   // Listar todos los préstamos
   async listar(req, res) {
     try {

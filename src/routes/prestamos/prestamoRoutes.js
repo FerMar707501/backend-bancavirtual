@@ -7,6 +7,11 @@ const permissionsMiddleware = require('../../middlewares/permissions');
 // Todas las rutas requieren autenticación
 router.use(authMiddleware);
 
+// Ver mis préstamos (clientes)
+router.get('/mis-prestamos', 
+  prestamoController.misPrestamos
+);
+
 // Listar préstamos
 router.get('/', 
   permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
@@ -19,9 +24,8 @@ router.get('/:id',
   prestamoController.obtenerPorId
 );
 
-// Solicitar préstamo
+// Solicitar préstamo (clientes pueden solicitar)
 router.post('/solicitar', 
-  permissionsMiddleware(['ADMIN_PRESTAMOS', 'ADMIN_USUARIOS']), 
   prestamoController.solicitar
 );
 

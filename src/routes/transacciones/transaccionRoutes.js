@@ -25,6 +25,11 @@ router.get('/cuenta/:id_cuenta/historial',
   transaccionController.historialCuenta
 );
 
+// Obtener transacciones de una cuenta (para clientes)
+router.get('/cuenta/:id_cuenta', 
+  transaccionController.historialCuenta
+);
+
 // Realizar depósito
 router.post('/deposito', 
   permissionsMiddleware(['TRANS_DEPOSITO']), 
