@@ -39,10 +39,12 @@ const permissionsMiddleware = (permisosRequeridos = []) => {
       }
 
       // Extraer códigos de permisos del usuario
-      const permisosUsuario = usuario.rol.permisos.map(p => p.codigo);
+      const permisosUsuario = usuario.rol && usuario.rol.permisos 
+        ? usuario.rol.permisos.map(p => p.codigo) 
+        : [];
 
       // Verificar si el usuario tiene al menos uno de los permisos requeridos
-      const tienePermiso = permisos.some(permiso => 
+      const tienePermiso = Array.isArray(permisos) && permisos.some(permiso => 
         permisosUsuario.includes(permiso)
       );
 

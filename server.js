@@ -41,12 +41,12 @@ const startServer = async () => {
 // Manejo de errores no capturados
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Rejection:', err);
-  process.exit(1);
+  // No cerrar el servidor, solo logear el error
 });
 
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
-  process.exit(1);
+  // No cerrar el servidor, solo logear el error
 });
 
 // Iniciar

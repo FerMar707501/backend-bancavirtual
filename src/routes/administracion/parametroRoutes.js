@@ -9,25 +9,25 @@ router.use(auth);
 
 // Listar parámetros - Requiere PARAMETRO_LISTAR
 router.get('/', 
-  permissions('PARAMETRO_LISTAR'), 
+  permissions(['PARAMETRO_LISTAR']), 
   parametroController.listar
 );
 
 // Obtener parámetro por clave - Requiere PARAMETRO_LISTAR
 router.get('/:clave', 
-  permissions('PARAMETRO_LISTAR'), 
+  permissions(['PARAMETRO_LISTAR']), 
   parametroController.obtenerPorClave
 );
 
 // Crear parámetro - Requiere PARAMETRO_CREAR
 router.post('/', 
-  permissions('PARAMETRO_CREAR'), 
+  permissions(['PARAMETRO_CREAR']), 
   parametroController.crear
 );
 
 // Actualizar parámetro - Requiere PARAMETRO_EDITAR
 router.put('/:clave', 
-  permissions('PARAMETRO_EDITAR'), 
+  permissions(['PARAMETRO_EDITAR']), 
   parametroController.actualizar
 );
 
